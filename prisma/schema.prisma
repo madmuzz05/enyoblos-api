@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["master", "public", "pemilihan"]
+}
+
+
+model User {
+  idUser Int @id @default(autoincrement())
+  nama String
+  email String @unique
+  jenisKelamin String?
+  noTelepon String?
+  tglLahir DateTime? @db.Date
+  organisasiId Int
+  organisasi Organisasi @relation(fields: [organisasiId], references: [idOrganisasi])
+  kandidat Kandidat[]
+  login Auth?
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("master")
+  @@map("users")
+}
+
+model Auth {
+  idAuth Int @id @default(autoincrement())
+  userId Int @unique
+  email String
+  password String
+  user User @relation(fields: [userId], references: [idUser])
+  @@schema("public")
+}
+
+model Role {
+  idRole Int @id @default(autoincrement())
+  nama String
+  organisasiId Int
+  organisasi Organisasi @relation(fields: [organisasiId], references: [idOrganisasi])
+  modelHasRole modelHasRole[]
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("public")
+  @@map("roles")
+}
+
+model modelHasRole {
+  idHasRole Int @id @default(autoincrement())
+  roleId Int
+  userId Int
+  role Role @relation(fields: [roleId], references: [idRole])
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("public")
+  @@map("model_has_roles")
+}
+
+model Organisasi {
+  idOrganisasi Int @id @default(autoincrement())
+  nama String
+  shortName String?
+  pemilihan Pemilihan[]
+  user User[]
+  role Role[]
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("master")
+  @@map("organisasis")
+}
+
+model Pemilihan {
+  idPemilihan Int @id @default(autoincrement())
+  organisasiId Int @unique
+  judul String
+  subJudul String?
+  periodeTahun String
+  statusPemilihan StatusPemilihan @default(inactive)
+  organisasi Organisasi @relation(fields: [organisasiId], references: [idOrganisasi])
+  kandidat Kandidat[]
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("pemilihan")
+  @@map("pemilihans")
+}
+
+model Kandidat {
+  idKandidat Int @id @default(autoincrement())
+  visi String
+  misi String
+  foto String?
+  noUrut Int
+  userId Int
+  user User @relation(fields: [userId], references: [idUser])
+  pemilihanId Int
+  pemilihan Pemilihan @relation(fields: [pemilihanId], references: [idPemilihan])
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("pemilihan")
+  @@map("kandidats")
+}
+
+model hasilPemilihan {
+  id Int @id @default(autoincrement())
+  userId Int
+  organisasiId Int?
+  pemilihanId Int
+  kandidatId Int
+  createdAt DateTime @db.Timestamp() @default(now())
+  updatedAt DateTime @db.Timestamp() @updatedAt
+  @@schema("pemilihan")
+  @@map("hasil_pemilihans")
+}
+
+enum StatusPemilihan {
+  inactive
+  active
+  @@schema("pemilihan")
+  @@map("status_pemilihan")
+}
+
