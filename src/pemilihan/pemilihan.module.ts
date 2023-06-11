@@ -4,6 +4,6 @@ import { PemilihanController } from './pemilihan.controller';
 
 @Module({
   providers: [PemilihanService],
-  controllers: [PemilihanController]
+  controllers: [PemilihanController],
 })
 export class PemilihanModule {}

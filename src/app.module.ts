@@ -6,16 +6,20 @@ import { PemilihanModule } from './pemilihan/pemilihan.module';
 import { HasilPemilihanModule } from './hasil-pemilihan/hasil-pemilihan.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     UserModule,
     OrganisasiModule,
     KandidatModule,
     PemilihanModule,
     HasilPemilihanModule,
     PrismaModule,
-    AuthModule
+    AuthModule,
   ],
 })
 export class AppModule {}
