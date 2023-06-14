@@ -13,16 +13,16 @@ import { UserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private userService: UserService) {}
-  @UseGuards(AuthGuard('jwt'))
   @Post('getUser')
   @FormDataRequest()
   getUser() {
     return this.userService.getUser();
   }
 
-  @Get('findUser')
+  @Get('findUser/idUser')
   findUser(@Param('idUser') idUser: string) {
     console.log(idUser);
     return this.userService.findUser(idUser);
