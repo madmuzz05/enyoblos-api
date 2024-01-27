@@ -9,7 +9,7 @@ export class OrganisasiDto{
     @IsNotEmpty()
     shortname:string
 
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    id: number;
+    id: string;
 }

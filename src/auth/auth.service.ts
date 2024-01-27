@@ -4,7 +4,6 @@ import { AuthDto, LoginDto } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { promises } from 'dns';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +24,19 @@ export class AuthService {
 
     if (issetEmail) {
       throw new HttpException('Email tidak boleh sama', HttpStatus.NOT_FOUND);
+    }
+    const issetData = await this.prisma.user.findFirst({
+      where: {
+        email: dto.email,
+        organisasiId: parseInt(dto.organisasi_id)
+      },
+      include: {
+        login: true,
+      },
+    });
+
+    if (issetData) {
+      throw new HttpException('Data Sudah Ada', HttpStatus.NOT_FOUND);
     }
 
     const str = dto.tgl_lahir;
@@ -51,8 +63,6 @@ export class AuthService {
     }
 
     return {
-      status: 200,
-      Info: 'Berhasil Menambahkan data',
       data: model,
     };
   }
@@ -75,8 +85,7 @@ export class AuthService {
 
     if (!(await argon.verify(model.login.password, dto.password))) {
       return {
-        status: 200,
-        Info: 'Gagal masuk kedalam sistem',
+        msg: 'Gagal masuk kedalam sistem',
       };
     }
 
@@ -92,12 +101,13 @@ export class AuthService {
     delete model.login.password;
 
     const data = await this.signToken(model.idUser, model.email);
-
-    return {
-      status: 200,
-      info: 'login berhasil',
+    const response ={
       data: model,
       access_token: data,
+    }
+
+    return {
+      data: response,
     };
   }
 
@@ -108,7 +118,7 @@ export class AuthService {
     };
     const secretConfig = this.config.get('JWT_SECRET');
     const generateToken = await this.jwt.signAsync(payload, {
-      expiresIn: '300m',
+      // expiresIn: '300m',
       secret: secretConfig,
     });
 

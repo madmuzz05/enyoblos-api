@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OrganisasiService } from './organisasi.service';
 import { OrganisasiDto } from './dto';
 import { FormDataRequest } from 'nestjs-form-data';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('organisasi')
+@UseGuards(AuthGuard('jwt'))
 export class OrganisasiController {
     constructor(private organisasiService: OrganisasiService){}
     @Get('getOrganisasi')

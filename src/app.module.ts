@@ -7,6 +7,8 @@ import { HasilPemilihanModule } from './hasil-pemilihan/hasil-pemilihan.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { RolesController } from './roles/roles.controller';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
     HasilPemilihanModule,
     PrismaModule,
     AuthModule,
-  ],
+    RolesModule,
+  ]
 })
 export class AppModule {}

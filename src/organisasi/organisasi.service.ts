@@ -10,11 +10,7 @@ export class OrganisasiService {
         if (!model) {
             throw new HttpException('Data organisasi tidak ada', HttpStatus.NOT_FOUND);
         }
-        return {
-            status: 200,
-            info: 'Success',
-            data: model
-        }
+        return {data:model}
     }
 
     async findOrganisasi(@Param('id') id:string){
@@ -27,11 +23,7 @@ export class OrganisasiService {
             throw new HttpException('Data organisasi tidak ditemukan', HttpStatus.NOT_FOUND);
         }
 
-        return {
-            status: 200,
-            info: 'Success',
-            data: model
-        }
+        return {data:model}
     }
 
     async storeOrganisasi(@Body() dto:OrganisasiDto){
@@ -43,28 +35,37 @@ export class OrganisasiService {
         if (issetShortname) {
             throw new HttpException('Shortname sudah digunakan!', HttpStatus.NOT_FOUND)
         }
-        const model = await this.prisma.organisasi.upsert({
+        if (dto.id) {
+            const model = await this.prisma.organisasi.update({
+                where:{
+                    idOrganisasi:parseInt(dto.id)
+                },
+                data:{
+                    nama:dto.nama,
+                    shortName:dto.shortname
+                }
+            })
+            if (!model) {
+                throw new HttpException('Gagal menambahkan data', HttpStatus.NOT_FOUND)
+            }
+        } else {
+            const model = await this.prisma.organisasi.create({
+                data:{
+                    nama:dto.nama,
+                    shortName:dto.shortname
+                }
+            })
+            if (!model) {
+                throw new HttpException('Gagal menambahkan data', HttpStatus.NOT_FOUND)
+            }
+        }
+        const model = await this.prisma.organisasi.findFirst({
             where:{
-                idOrganisasi:dto.id??0
-            },
-            update:{
-                nama:dto.nama,
                 shortName:dto.shortname
-            },
-            create:{
-                nama:dto.nama,
-                shortName:dto.shortname
-            },
+            }
         })
 
-        if (!model) {
-            throw new HttpException('Gagal menambahkan data', HttpStatus.NOT_FOUND)
-        }
-        return {
-            status: 200,
-            info: 'Berhasil menambahkan data',
-            data: model
-        }
+        return {data:model}
 
 
     }
@@ -83,9 +84,6 @@ export class OrganisasiService {
                 idOrganisasi:parseInt(id)
             }
         })
-        return {
-            status: 200,
-            info: 'Berhasil menghapus organisasi'
-        }
+        return {msg:'Berhasil Menghapus data'}
     }
 }

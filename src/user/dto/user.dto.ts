@@ -1,29 +1,34 @@
 import {
-  IsEmail,
-  IsEmpty,
   IsNotEmpty,
   IsNumberString,
   IsString,
 } from 'class-validator';
 
 export class UserDto {
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   nama: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   gender: string;
 
-  @IsNotEmpty()
   @IsNumberString()
+  @IsNotEmpty()
   telepon: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   tgl_lahir: Date;
 
   @IsNotEmpty()
   @IsNumberString()
   organisasi_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNumberString()
+  idUser: string;
 }
